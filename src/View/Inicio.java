@@ -45,20 +45,47 @@ public class Inicio extends javax.swing.JFrame {
     private void initComponents() {
 
         PanelLista = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         listaNotas = new javax.swing.JList<>();
+        jLabel2 = new javax.swing.JLabel();
         background = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         PanelLista.setBackground(new java.awt.Color(204, 204, 204));
-        PanelLista.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        PanelLista.setLayout(null);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("Mis Notas");
-        PanelLista.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(49, 43, -1, -1));
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 410, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 245, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("tab1", jPanel1);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 410, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 245, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("tab2", jPanel2);
+
+        PanelLista.add(jTabbedPane1);
+        jTabbedPane1.setBounds(170, 80, 410, 280);
 
         jScrollPane2.setBackground(new java.awt.Color(213, 195, 156));
 
@@ -70,7 +97,14 @@ public class Inicio extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(listaNotas);
 
-        PanelLista.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(49, 74, 110, 300));
+        PanelLista.add(jScrollPane2);
+        jScrollPane2.setBounds(30, 80, 111, 280);
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("Mis notas");
+        PanelLista.add(jLabel2);
+        jLabel2.setBounds(30, 50, 82, 25);
 
         background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/fondo mosaico v2.jpg"))); // NOI18N
         background.addContainerListener(new java.awt.event.ContainerAdapter() {
@@ -78,13 +112,16 @@ public class Inicio extends javax.swing.JFrame {
                 backgroundComponentRemoved(evt);
             }
         });
-        PanelLista.add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 630, 420));
+        PanelLista.add(background);
+        background.setBounds(0, 0, 630, 420);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(PanelLista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(PanelLista, javax.swing.GroupLayout.PREFERRED_SIZE, 655, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -136,8 +173,11 @@ public class Inicio extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PanelLista;
     private javax.swing.JLabel background;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JList<String> listaNotas;
     // End of variables declaration//GEN-END:variables
 }
