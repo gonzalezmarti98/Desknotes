@@ -1,17 +1,21 @@
 
 package Main;
 
-/**
- *
- * @author Martí González
- */
+import Controllers.ConnectionDB;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class MainClass {
 
-    /**
-     * @param args the command line arguments
-     */
+
     public static void main(String[] args) {
-        // TODO code application logic here
+        
+        try(Connection con = ConnectionDB.conectar()){
+            System.out.println("CONEXIÓN A LA BDD EFECTUADA!");
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
     
 }
