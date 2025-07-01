@@ -187,14 +187,14 @@ public class LoginView extends javax.swing.JFrame {
         String userText = txt_user.getText();
         String passwordText = new String(txt_password.getPassword());
         
-        User LoggedUser = Login.login(userText, passwordText);
+        User loggedUser = Login.login(userText, passwordText);
         
-        if(LoggedUser != null){
+        if(loggedUser != null){
             //JOptionPane.showMessageDialog(null, "Welcome " + LoggedUser.getUsername());
             javax.swing.SwingUtilities.invokeLater(new Runnable(){
             public void run(){
-                new MainPageView().setVisible(true);
-                dispose();
+                new MainPageView(loggedUser).setVisible(true);
+                dispose(); //cierro la ventana actual (LoginView)
             }
         });
         }else{

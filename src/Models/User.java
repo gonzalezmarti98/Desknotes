@@ -72,4 +72,10 @@ public class User {
     public void setNoteList(List<Note> noteList){
         this.noteList = noteList;
     }
+    
+    public String toString(){
+        return "Username: " + getUsername() +
+                "\nName: " + getName() +
+                "\nemail: " + getEmail();
+    }
 }

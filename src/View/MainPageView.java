@@ -1,13 +1,24 @@
 package View;
 
+import Models.User;
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.JOptionPane;
 
 public class MainPageView extends javax.swing.JFrame {
-
-    public MainPageView() {
+    
+    private static User loggedUser; //aquí guardaré el loggedUser sacado del Login
+    
+    /**
+     * 
+     * @param loggedUser el usuario con el que nos hemos Loggeado
+     */
+    public MainPageView(User loggedUser) {
         
         initComponents();
+        
+        // guardo el objeto loggedUser recibido de LoginView en el atributo creado "private User loggedUser;"
+        this.loggedUser = loggedUser;
+        
         this.setLocationRelativeTo(null); //centra la ventana al iniciarse
         
         //preview - content - ScrollPane3
@@ -46,7 +57,7 @@ public class MainPageView extends javax.swing.JFrame {
         pnl_princinpal = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
+        btn_imageUser = new javax.swing.JButton();
         btn_login = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         noteList = new javax.swing.JList<>();
@@ -88,17 +99,18 @@ public class MainPageView extends javax.swing.JFrame {
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/fondo mosaico v3.jpg"))); // NOI18N
         jLabel5.setText("jLabel5");
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/photo user v3_1.png"))); // NOI18N
-        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_imageUser.setBackground(new java.awt.Color(70, 73, 75));
+        btn_imageUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/photo user v3_1.png"))); // NOI18N
+        btn_imageUser.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_imageUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_imageUserActionPerformed(evt);
+            }
+        });
 
         btn_login.setText("New ");
         btn_login.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        noteList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Nota 1", "Nota 2" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(noteList);
 
         pnl_nothing.setBackground(new java.awt.Color(70, 73, 75));
@@ -297,7 +309,7 @@ public class MainPageView extends javax.swing.JFrame {
                                 .addGap(25, 25, 25)
                                 .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jButton3))))
+                                    .addComponent(btn_imageUser))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 628, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -311,7 +323,7 @@ public class MainPageView extends javax.swing.JFrame {
                 .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTabbedPane1)
                     .addGroup(pnl_princinpalLayout.createSequentialGroup()
-                        .addComponent(jButton3)
+                        .addComponent(btn_imageUser)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -336,6 +348,13 @@ public class MainPageView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btn_imageUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_imageUserActionPerformed
+        String userData = "USERNAME:  " + loggedUser.getUsername() +
+                        "\nNAME:  " + loggedUser.getName() +
+                        "\nEMAIL:  " + loggedUser.getEmail();
+        JOptionPane.showMessageDialog(null, userData, "USER DATA", -1); // -1 = no mostrar imágen
+    }//GEN-LAST:event_btn_imageUserActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -343,7 +362,7 @@ public class MainPageView extends javax.swing.JFrame {
         
         // para aplicar FlatLaf:
         FlatDarkLaf.setup();
-        MainPageView mainPage = new MainPageView();
+        MainPageView mainPage = new MainPageView(loggedUser);
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -355,10 +374,10 @@ public class MainPageView extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_edit;
+    private javax.swing.JButton btn_imageUser;
     private javax.swing.JButton btn_login;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
