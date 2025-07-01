@@ -3,9 +3,9 @@ package View;
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.JOptionPane;
 
-public class MainPage extends javax.swing.JFrame {
+public class MainPageView extends javax.swing.JFrame {
 
-    public MainPage() {
+    public MainPageView() {
         
         initComponents();
         this.setLocationRelativeTo(null); //centra la ventana al iniciarse
@@ -343,7 +343,7 @@ public class MainPage extends javax.swing.JFrame {
         
         // para aplicar FlatLaf:
         FlatDarkLaf.setup();
-        MainPage mainPage = new MainPage();
+        MainPageView mainPage = new MainPageView();
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
