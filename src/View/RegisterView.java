@@ -2,7 +2,6 @@
 package View;
 
 import Models.User;
-import Controllers.Login;
 import Controllers.UserDAO;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.Color;

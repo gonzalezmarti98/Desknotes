@@ -2,7 +2,7 @@
 package View;
 
 import Models.User;
-import Controllers.Login;
+import Controllers.UserDAO;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.Color;
 import java.awt.event.FocusAdapter;
@@ -207,7 +207,7 @@ public class LoginView extends javax.swing.JFrame {
         String userText = txt_user.getText();
         String passwordText = new String(txt_password.getPassword());
         
-        User loggedUser = Login.login(userText, passwordText);
+        User loggedUser = UserDAO.login(userText, passwordText);
         
         if(loggedUser != null){
             //JOptionPane.showMessageDialog(null, "Welcome " + LoggedUser.getUsername());
