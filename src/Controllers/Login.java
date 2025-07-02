@@ -16,8 +16,8 @@ public class Login {
      */
     public static User login(String user, String password){
         User LoggedUser = null;
+        String sql = "SELECT * FROM table_user WHERE username=? AND password=?";
         try(Connection conn = ConnectionDB.conectar()){
-            String sql = "SELECT * FROM table_user WHERE username=? AND password=?";
             PreparedStatement stmnt = conn.prepareStatement(sql); //transforma la instrucción sql para que lo lea la bdd
             stmnt.setString(1, user);
             stmnt.setString(2, password);

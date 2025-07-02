@@ -62,8 +62,9 @@ public class LoginView extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         btn_login = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btn_joinNow = new javax.swing.JButton();
         lbl_errorText = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
 
         jLabel4.setText("jLabel4");
 
@@ -90,7 +91,8 @@ public class LoginView extends javax.swing.JFrame {
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/fondo mosaico v3.jpg"))); // NOI18N
         jLabel5.setText("jLabel5");
 
-        btn_login.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btn_login.setBackground(new java.awt.Color(78, 130, 255));
+        btn_login.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btn_login.setText("Login");
         btn_login.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_login.addActionListener(new java.awt.event.ActionListener() {
@@ -101,40 +103,56 @@ public class LoginView extends javax.swing.JFrame {
 
         jLabel6.setText("New in Desknotes?");
 
-        jButton1.setBackground(new java.awt.Color(60, 63, 65));
-        jButton1.setForeground(new java.awt.Color(0, 102, 255));
-        jButton1.setText("Join now");
-        jButton1.setBorder(null);
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_joinNow.setBackground(new java.awt.Color(60, 63, 65));
+        btn_joinNow.setForeground(new java.awt.Color(0, 102, 255));
+        btn_joinNow.setText("Join now");
+        btn_joinNow.setBorder(null);
+        btn_joinNow.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_joinNow.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_joinNowActionPerformed(evt);
+            }
+        });
 
-        lbl_errorText.setForeground(new java.awt.Color(60, 63, 65));
+        lbl_errorText.setForeground(new java.awt.Color(255, 51, 51));
         lbl_errorText.setText("Incorrect user or password");
+
+        jLabel8.setFont(new java.awt.Font("ISOCT3_IV50", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("Login");
+        jLabel8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout pnl_princinpalLayout = new javax.swing.GroupLayout(pnl_princinpal);
         pnl_princinpal.setLayout(pnl_princinpalLayout);
         pnl_princinpalLayout.setHorizontalGroup(
             pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_princinpalLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
                 .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2)
-                            .addComponent(txt_password)
-                            .addComponent(txt_user, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jLabel1))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_princinpalLayout.createSequentialGroup()
-                        .addComponent(btn_login)
-                        .addGap(68, 68, 68))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_princinpalLayout.createSequentialGroup()
+                    .addGroup(pnl_princinpalLayout.createSequentialGroup()
+                        .addGap(25, 25, 25)
                         .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbl_errorText)
-                            .addGroup(pnl_princinpalLayout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1)))
-                        .addGap(23, 23, 23)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel2)
+                                    .addComponent(txt_password)
+                                    .addComponent(txt_user, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jLabel1))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_princinpalLayout.createSequentialGroup()
+                                        .addComponent(btn_login)
+                                        .addGap(45, 45, 45))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_princinpalLayout.createSequentialGroup()
+                                        .addComponent(jLabel6)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btn_joinNow)))
+                                .addGroup(pnl_princinpalLayout.createSequentialGroup()
+                                    .addComponent(lbl_errorText)
+                                    .addGap(36, 36, 36)))))
+                    .addGroup(pnl_princinpalLayout.createSequentialGroup()
+                        .addGap(89, 89, 89)
+                        .addComponent(jLabel8)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -145,8 +163,10 @@ public class LoginView extends javax.swing.JFrame {
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(pnl_princinpalLayout.createSequentialGroup()
-                .addGap(50, 50, 50)
+                .addGap(15, 15, 15)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addGap(11, 11, 11)
@@ -157,12 +177,12 @@ public class LoginView extends javax.swing.JFrame {
                 .addComponent(txt_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbl_errorText)
-                .addGap(29, 29, 29)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_login)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jButton1))
+                    .addComponent(btn_joinNow))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -199,9 +219,19 @@ public class LoginView extends javax.swing.JFrame {
         });
         }else{
             lbl_errorText.setForeground(Color.RED);
-            JOptionPane.showMessageDialog(null, "Loggin failed", "Error", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(null, "Loggin failed", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btn_loginActionPerformed
+
+    private void btn_joinNowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_joinNowActionPerformed
+        javax.swing.SwingUtilities.invokeLater(new Runnable(){
+            public void run(){
+                new RegisterView().setVisible(true);
+                lbl_errorText.setForeground(lbl_errorText.getBackground());
+//                dispose();
+            }
+        });
+    }//GEN-LAST:event_btn_joinNowActionPerformed
 
     public static void main(String args[]) {
 
@@ -218,14 +248,15 @@ public class LoginView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_joinNow;
     private javax.swing.JButton btn_login;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel lbl_errorText;
     private javax.swing.JPanel pnl_princinpal;
     private javax.swing.JPasswordField txt_password;
