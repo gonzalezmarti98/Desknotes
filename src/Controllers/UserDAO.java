@@ -43,69 +43,45 @@ public class UserDAO {
     }
     
     public static boolean newUser(User registeredUser){
-        boolean usernameRepeated = searchUser(registeredUser);
-        
-        if(!usernameRepeated){
-            boolean emailRepeated = searchEmail(registeredUser);
-            if(!emailRepeated){
-                String sql = "INSERT into table_user(username, password, name, email) VALUES(?,?,?,?)";
-                try(Connection conn = ConnectionDB.conectar()){
-                    //transformamos instrucción para que lo pueda leer la bdd y guardamos el nuevo User
-                    PreparedStatement stmnt = conn.prepareStatement(sql);
-                    stmnt.setString(1, registeredUser.getUsername());
-                    stmnt.setString(2, registeredUser.getPassword());
-                    stmnt.setString(3, registeredUser.getName());
-                    stmnt.setString(4, registeredUser.getEmail());
-                    stmnt.executeUpdate(); //para ejecutar DCL (INSERT, DELETE, UPDATE)
-                    return true;
-                }catch(SQLException e){
-                    e.printStackTrace();
-                    return false;
-                }
-            }else{
-                JOptionPane.showMessageDialog(null, "This email is already in use", "Registry failed", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-        }else{
+        boolean usernameRepeated = repeatedValue("username", registeredUser.getUsername());
+        if(usernameRepeated){
             JOptionPane.showMessageDialog(null, "This username is already in use", "Registry failed", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-    }
-
-    private static boolean searchUser(User registeredUser) {
-        String searchUserSql = "SELECT COUNT(*) FROM table_user WHERE username=?";
+        
+        boolean emailRepeated = repeatedValue("email", registeredUser.getEmail());
+        if(emailRepeated){
+            JOptionPane.showMessageDialog(null, "This email is already in use", "Registry failed", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        String sql = "INSERT into table_user(username, password, name, email) VALUES(?,?,?,?)";
         try(Connection conn = ConnectionDB.conectar()){
-            //transformamos instrucción para que lo pueda leer la bdd y comprobamos si ya existe el "username"
-            PreparedStatement stmt = conn.prepareStatement(searchUserSql);
-            stmt.setString(1, registeredUser.getUsername());
-            
-            ResultSet rs = stmt.executeQuery(); //ejecutamos el SELECT
-            if(rs.next()){
-                int count = rs.getInt(1);
-                if(count > 0){
-                    return true; //hay otro user con dicho username
-                }else{
-                    return false;
-                }
-            }
+            //transformamos instrucción para que lo pueda leer la bdd y guardamos el nuevo User
+            PreparedStatement stmnt = conn.prepareStatement(sql);
+            stmnt.setString(1, registeredUser.getUsername());
+            stmnt.setString(2, registeredUser.getPassword());
+            stmnt.setString(3, registeredUser.getName());
+            stmnt.setString(4, registeredUser.getEmail());
+            stmnt.executeUpdate(); //para ejecutar DCL (INSERT, DELETE, UPDATE)
+            return true;
         }catch(SQLException e){
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
-
-    private static boolean searchEmail(User registeredUser) {
-        String searchUserSql = "SELECT COUNT(*) FROM table_user WHERE email=?";
+    
+    private static boolean repeatedValue(String columna, String valor){
+        String sql = "SELECT COUNT(*) FROM table_user WHERE " + columna + "=?";
         try(Connection conn = ConnectionDB.conectar()){
-            //transformamos instrucción para que lo pueda leer la bdd y comprobamos si ya existe el "username"
-            PreparedStatement stmt = conn.prepareStatement(searchUserSql);
-            stmt.setString(1, registeredUser.getEmail());
+            PreparedStatement stmt = conn.prepareStatement(sql); //transformamos instrucción para que lo pueda leer la bdd
+            stmt.setString(1, valor);
+            ResultSet rs = stmt.executeQuery(); //ejecutamos SELECT
             
-            ResultSet rs = stmt.executeQuery(); //ejecutamos el SELECT
             if(rs.next()){
                 int count = rs.getInt(1);
                 if(count > 0){
-                    return true; //hay otro user con dicho username
+                    return true;
                 }else{
                     return false;
                 }
