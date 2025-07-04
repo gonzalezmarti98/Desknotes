@@ -46,23 +46,28 @@ public class UserDAO {
         boolean usernameRepeated = searchUser(registeredUser);
         
         if(!usernameRepeated){
-            String sql = "INSERT into table_user(username, password, name, email) VALUES(?,?,?,?)";
-            try(Connection conn = ConnectionDB.conectar()){
-                //transformamos instrucción para que lo pueda leer la bdd y guardamos el nuevo User
-                PreparedStatement stmnt = conn.prepareStatement(sql);
-                stmnt.setString(1, registeredUser.getUsername());
-                stmnt.setString(2, registeredUser.getPassword());
-                stmnt.setString(3, registeredUser.getName());
-                stmnt.setString(4, registeredUser.getEmail());
-                stmnt.executeUpdate(); //para ejecutar DCL (INSERT, DELETE, UPDATE)
-                return true;
-
-            }catch(SQLException e){
-                e.printStackTrace();
+            boolean emailRepeated = searchEmail(registeredUser);
+            if(!emailRepeated){
+                String sql = "INSERT into table_user(username, password, name, email) VALUES(?,?,?,?)";
+                try(Connection conn = ConnectionDB.conectar()){
+                    //transformamos instrucción para que lo pueda leer la bdd y guardamos el nuevo User
+                    PreparedStatement stmnt = conn.prepareStatement(sql);
+                    stmnt.setString(1, registeredUser.getUsername());
+                    stmnt.setString(2, registeredUser.getPassword());
+                    stmnt.setString(3, registeredUser.getName());
+                    stmnt.setString(4, registeredUser.getEmail());
+                    stmnt.executeUpdate(); //para ejecutar DCL (INSERT, DELETE, UPDATE)
+                    return true;
+                }catch(SQLException e){
+                    e.printStackTrace();
+                    return false;
+                }
+            }else{
+                JOptionPane.showMessageDialog(null, "This email is already in use", "Registry failed", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }else{
-            JOptionPane.showMessageDialog(null, "Registry failed", "This username is already in use", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "This username is already in use", "Registry failed", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -73,6 +78,28 @@ public class UserDAO {
             //transformamos instrucción para que lo pueda leer la bdd y comprobamos si ya existe el "username"
             PreparedStatement stmt = conn.prepareStatement(searchUserSql);
             stmt.setString(1, registeredUser.getUsername());
+            
+            ResultSet rs = stmt.executeQuery(); //ejecutamos el SELECT
+            if(rs.next()){
+                int count = rs.getInt(1);
+                if(count > 0){
+                    return true; //hay otro user con dicho username
+                }else{
+                    return false;
+                }
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private static boolean searchEmail(User registeredUser) {
+        String searchUserSql = "SELECT COUNT(*) FROM table_user WHERE email=?";
+        try(Connection conn = ConnectionDB.conectar()){
+            //transformamos instrucción para que lo pueda leer la bdd y comprobamos si ya existe el "username"
+            PreparedStatement stmt = conn.prepareStatement(searchUserSql);
+            stmt.setString(1, registeredUser.getEmail());
             
             ResultSet rs = stmt.executeQuery(); //ejecutamos el SELECT
             if(rs.next()){
