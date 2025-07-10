@@ -1,6 +1,7 @@
 
 package Models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -11,7 +12,7 @@ public class User {
     private String name;
     private String email;
     
-    private List<Note> noteList;
+    private List<Note> noteList = new ArrayList<>();
     // no estará en la tabla de la BDR
     // no la ponemos en el constructor pq no la queremos al crear un User
     
@@ -25,7 +26,7 @@ public class User {
         this.name = name;
         this.email = email;
     }
-    //constructor sin id --> para nuevos registros. El id se asigna con AUTO INCREMENT en la bdd
+    //constructor sin id ---> para nuevos registros. El id se asigna con AUTO INCREMENT en la bdd
     public User(String username, String password, String name, String email){
         this.username = username;
         this.password = password;
@@ -81,6 +82,7 @@ public class User {
         this.noteList = noteList;
     }
     
+    @Override
     public String toString(){
         return "Username: " + getUsername() +
                 "\nName: " + getName() +

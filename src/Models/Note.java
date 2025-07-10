@@ -17,6 +17,13 @@ public class Note {
         this.content = content;
     }
     
+    // constructor sin id ---> El id se asigna con AUTO INCREMENT en la bdd
+    public Note(int userId, String title, String content){
+        this.userId = userId;
+        this.title = title;
+        this.content = content;
+    }
+    
     public int getId(){
         return id;
     }
@@ -49,4 +56,8 @@ public class Note {
         this.content = content;
     }
     
+    @Override
+    public String toString(){
+        return getTitle(); //solo el título porque es lo único que quiero mostrar luego en un JList
+    }
 }

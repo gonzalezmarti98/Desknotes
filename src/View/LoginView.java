@@ -228,7 +228,6 @@ public class LoginView extends javax.swing.JFrame {
             public void run(){
                 new RegisterView().setVisible(true);
                 lbl_errorText.setForeground(lbl_errorText.getBackground());
-//                dispose();
             }
         });
     }//GEN-LAST:event_btn_joinNowActionPerformed

@@ -1,31 +1,51 @@
 package View;
 
+import Controllers.NoteDAO;
+import Models.Note;
 import Models.User;
+import Controllers.UserDAO;
 import com.formdev.flatlaf.FlatDarkLaf;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.util.List;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 public class MainPageView extends javax.swing.JFrame {
     
     private static User loggedUser; //aquí guardaré el loggedUser sacado del Login
-    
-    /**
-     * 
-     * @param loggedUser el usuario con el que nos hemos Loggeado
-     */
+
+    private DefaultListModel<String> noteListModel = new DefaultListModel<>(); //Declaro un modelo de tipo Note (por defecto es String)
+
     public MainPageView(User loggedUser) {
         
         initComponents();
         
+        setupErrorLabelAndFocus();
+        
+        noteList.setModel(noteListModel);
+
+        this.setLocationRelativeTo(null); //centra la ventana al iniciarse
+        
         // guardo el objeto loggedUser recibido de LoginView en el atributo creado "private User loggedUser;"
         this.loggedUser = loggedUser;
         
-        this.setLocationRelativeTo(null); //centra la ventana al iniciarse
+        //SWITCH de PANELES nothing, new, etc.
+        //Damos nombre a cada panel para ir cambiando de vista
+        parentCardPanel.add(pnl_nothing, "nothing");
+        parentCardPanel.add(pnl_new, "new");
+        parentCardPanel.add(pnl_preview, "preview");
+        parentCardPanel.add(pnl_edit, "edit");
         
-        //preview - content - ScrollPane3
-        jScrollPane3.getViewport().setOpaque(false); //oculta el fondo del ScrollPane
-        jScrollPane3.setBorder(null); //oculta el borde del ScrollPane
-        
-        //SELECTOR DE NOTAS (LISTA)
+        //muestro texto si no hay notas
+        if(!loggedUser.getNoteList().isEmpty()){
+            lbl_arrow.setVisible(false);
+            lbl_noNotes.setVisible(false);
+        }
+ 
+        //LISTA DE NOTAS
         // Le decimos a la lista que escuche cuando se selecciona un elemento
         noteList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             @Override
@@ -33,12 +53,15 @@ public class MainPageView extends javax.swing.JFrame {
                 // Evitamos que se ejecute el código dos veces (por seguridad)
                 if (!e.getValueIsAdjusting()) {
                     // Obtenemos el valor (título de la nota) que el usuario seleccionó
-                    String selectedText = noteList.getSelectedValue();
+                    String selectedTitle = noteList.getSelectedValue();
 
-                    // Si hay algo seleccionado, mostramos un mensaje
-                    if (selectedText != null) {
-                        //JOptionPane.showMessageDialog(null, "Seleccionaste: " + selectedText);
-                        System.out.println("You've selected: " + selectedText);
+                    // muestro --> TÍTULO SELECCIONADO
+                    if (selectedTitle != null) {
+                        CardLayout cl = (CardLayout)(parentCardPanel.getLayout());
+                        cl.show(parentCardPanel, "preview");
+                        lbl_prevTitle.setText(selectedTitle);
+                        String content = NoteDAO.getContent(selectedTitle, loggedUser.getId());
+                        lbl_prevContent.setText(content);
                     }
                 }
             }
@@ -58,33 +81,29 @@ public class MainPageView extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         btn_imageUser = new javax.swing.JButton();
-        btn_login = new javax.swing.JButton();
+        btn_new = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         noteList = new javax.swing.JList<>();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        parentCardPanel = new javax.swing.JPanel();
         pnl_nothing = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
+        lbl_arrow = new javax.swing.JLabel();
+        lbl_noNotes = new javax.swing.JLabel();
         pnl_new = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        tf_newTitle = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        txta_newContent = new javax.swing.JTextArea();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        btn_saveNote = new javax.swing.JButton();
+        txt_title = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txt_content = new javax.swing.JTextArea();
+        lbl_errorText = new javax.swing.JLabel();
         pnl_preview = new javax.swing.JPanel();
-        btn_edit = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         lbl_prevTitle = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
         lbl_prevContent = new javax.swing.JLabel();
+        btn_edit = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         pnl_edit = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        tf_title = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -108,87 +127,125 @@ public class MainPageView extends javax.swing.JFrame {
             }
         });
 
-        btn_login.setText("New ");
-        btn_login.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_new.setBackground(new java.awt.Color(78, 130, 255));
+        btn_new.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_new.setText("New ");
+        btn_new.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_new.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_newActionPerformed(evt);
+            }
+        });
+
+        jScrollPane1.setBackground(new java.awt.Color(70, 73, 75));
 
         jScrollPane1.setViewportView(noteList);
 
+        parentCardPanel.setLayout(new java.awt.CardLayout());
+
         pnl_nothing.setBackground(new java.awt.Color(70, 73, 75));
 
-        jLabel7.setFont(new java.awt.Font("ISOCT3_IV50", 1, 28)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("DeskNotes");
-        jLabel7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        lbl_arrow.setFont(new java.awt.Font("ISOCT3_IV50", 1, 18)); // NOI18N
+        lbl_arrow.setForeground(new java.awt.Color(255, 255, 255));
+        lbl_arrow.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbl_arrow.setText("<---------------");
+        lbl_arrow.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        lbl_arrow.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        lbl_noNotes.setFont(new java.awt.Font("ISOCT3_IV50", 1, 18)); // NOI18N
+        lbl_noNotes.setForeground(new java.awt.Color(255, 255, 255));
+        lbl_noNotes.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbl_noNotes.setText("<html>You don't have any<br>Note yet");
+        lbl_noNotes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout pnl_nothingLayout = new javax.swing.GroupLayout(pnl_nothing);
         pnl_nothing.setLayout(pnl_nothingLayout);
         pnl_nothingLayout.setHorizontalGroup(
             pnl_nothingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_nothingLayout.createSequentialGroup()
-                .addContainerGap(138, Short.MAX_VALUE)
-                .addComponent(jLabel7)
-                .addGap(132, 132, 132))
+            .addGroup(pnl_nothingLayout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(pnl_nothingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl_noNotes, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbl_arrow))
+                .addContainerGap(161, Short.MAX_VALUE))
         );
         pnl_nothingLayout.setVerticalGroup(
             pnl_nothingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnl_nothingLayout.createSequentialGroup()
-                .addGap(169, 169, 169)
-                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(206, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_nothingLayout.createSequentialGroup()
+                .addContainerGap(196, Short.MAX_VALUE)
+                .addComponent(lbl_noNotes, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbl_arrow, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(152, 152, 152))
         );
 
-        jTabbedPane1.addTab("nothing", pnl_nothing);
+        parentCardPanel.add(pnl_nothing, "card2");
 
         pnl_new.setBackground(new java.awt.Color(70, 73, 75));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel8.setText("New Title:");
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setText("Title");
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel9.setText("Writte here your content:");
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel6.setText("Content");
 
-        txta_newContent.setColumns(20);
-        txta_newContent.setLineWrap(true);
-        txta_newContent.setRows(5);
-        txta_newContent.setWrapStyleWord(true);
-        jScrollPane4.setViewportView(txta_newContent);
+        btn_saveNote.setBackground(new java.awt.Color(78, 130, 255));
+        btn_saveNote.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_saveNote.setText("Save Note");
+        btn_saveNote.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_saveNote.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_saveNoteActionPerformed(evt);
+            }
+        });
+
+        txt_content.setColumns(20);
+        txt_content.setRows(5);
+        jScrollPane2.setViewportView(txt_content);
+
+        lbl_errorText.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lbl_errorText.setForeground(new java.awt.Color(255, 0, 0));
+        lbl_errorText.setText("You must fill all the gaps");
 
         javax.swing.GroupLayout pnl_newLayout = new javax.swing.GroupLayout(pnl_new);
         pnl_new.setLayout(pnl_newLayout);
         pnl_newLayout.setHorizontalGroup(
             pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_newLayout.createSequentialGroup()
-                .addContainerGap(40, Short.MAX_VALUE)
-                .addGroup(pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9)
-                    .addComponent(tf_newTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
-                .addGap(31, 31, 31))
+            .addGroup(pnl_newLayout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel6)
+                        .addComponent(jLabel4)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+                        .addComponent(txt_title))
+                    .addGroup(pnl_newLayout.createSequentialGroup()
+                        .addComponent(lbl_errorText)
+                        .addGap(61, 61, 61)
+                        .addComponent(btn_saveNote)))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         pnl_newLayout.setVerticalGroup(
             pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_newLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel8)
+                .addGap(26, 26, 26)
+                .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tf_newTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel9)
+                .addComponent(txt_title, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
+                .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
-                .addGap(50, 50, 50))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_saveNote)
+                    .addComponent(lbl_errorText))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("new", pnl_new);
+        parentCardPanel.add(pnl_new, "card3");
 
         pnl_preview.setBackground(new java.awt.Color(70, 73, 75));
-
-        btn_edit.setText("Edit");
-        btn_edit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-
-        jButton1.setText("Delete");
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Title");
@@ -198,101 +255,72 @@ public class MainPageView extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setText("Content");
 
-        jScrollPane3.setOpaque(false);
-
         lbl_prevContent.setText("Contenido de la nota seleccionada");
         lbl_prevContent.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jScrollPane3.setViewportView(lbl_prevContent);
+
+        btn_edit.setBackground(new java.awt.Color(78, 130, 255));
+        btn_edit.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_edit.setText("Edit");
+        btn_edit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        jButton1.setBackground(new java.awt.Color(78, 130, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton1.setText("Delete");
+        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout pnl_previewLayout = new javax.swing.GroupLayout(pnl_preview);
         pnl_preview.setLayout(pnl_previewLayout);
         pnl_previewLayout.setHorizontalGroup(
             pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_previewLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btn_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(pnl_previewLayout.createSequentialGroup()
-                .addGap(38, 38, 38)
+                .addGap(23, 23, 23)
                 .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
-                    .addComponent(lbl_prevTitle)
                     .addComponent(jLabel2)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(37, Short.MAX_VALUE))
+                    .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(pnl_previewLayout.createSequentialGroup()
+                            .addComponent(btn_edit)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButton1))
+                        .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lbl_prevContent, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
+                            .addComponent(lbl_prevTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         pnl_previewLayout.setVerticalGroup(
             pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_previewLayout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(pnl_previewLayout.createSequentialGroup()
+                .addGap(25, 25, 25)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbl_prevTitle)
-                .addGap(18, 18, 18)
+                .addGap(30, 30, 30)
                 .addComponent(jLabel3)
-                .addGap(12, 12, 12)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbl_prevContent, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(btn_edit))
-                .addGap(10, 10, 10))
+                    .addComponent(btn_edit)
+                    .addComponent(jButton1))
+                .addGap(26, 26, 26))
         );
 
-        jTabbedPane1.addTab("preview", pnl_preview);
+        parentCardPanel.add(pnl_preview, "card4");
 
         pnl_edit.setBackground(new java.awt.Color(70, 73, 75));
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel4.setText("Title:");
-
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel6.setText("Content:");
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setLineWrap(true);
-        jTextArea1.setRows(5);
-        jTextArea1.setWrapStyleWord(true);
-        jScrollPane2.setViewportView(jTextArea1);
-
-        jButton2.setText("Save");
-        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout pnl_editLayout = new javax.swing.GroupLayout(pnl_edit);
         pnl_edit.setLayout(pnl_editLayout);
         pnl_editLayout.setHorizontalGroup(
             pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnl_editLayout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel6)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel4)
-                        .addComponent(tf_title, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton2))
-                .addContainerGap(35, Short.MAX_VALUE))
+            .addGap(0, 481, Short.MAX_VALUE)
         );
         pnl_editLayout.setVerticalGroup(
             pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnl_editLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tf_title, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
-                .addGap(15, 15, 15))
+            .addGap(0, 462, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("edit", pnl_edit);
+        parentCardPanel.add(pnl_edit, "card5");
 
         javax.swing.GroupLayout pnl_princinpalLayout = new javax.swing.GroupLayout(pnl_princinpal);
         pnl_princinpal.setLayout(pnl_princinpalLayout);
@@ -308,12 +336,12 @@ public class MainPageView extends javax.swing.JFrame {
                             .addGroup(pnl_princinpalLayout.createSequentialGroup()
                                 .addGap(25, 25, 25)
                                 .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btn_new, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(btn_imageUser))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(parentCardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 628, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
         pnl_princinpalLayout.setVerticalGroup(
             pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -321,7 +349,6 @@ public class MainPageView extends javax.swing.JFrame {
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(pnl_princinpalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1)
                     .addGroup(pnl_princinpalLayout.createSequentialGroup()
                         .addComponent(btn_imageUser)
                         .addGap(18, 18, 18)
@@ -329,9 +356,9 @@ public class MainPageView extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btn_login)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(50, 50, 50))
+                        .addComponent(btn_new))
+                    .addComponent(parentCardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(75, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -355,6 +382,62 @@ public class MainPageView extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, userData, "USER DATA", -1); // -1 = no mostrar imágen
     }//GEN-LAST:event_btn_imageUserActionPerformed
 
+    private void btn_newActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_newActionPerformed
+        // muestro el pnl_new
+        CardLayout cl = (CardLayout)(parentCardPanel.getLayout());
+        cl.show(parentCardPanel, "new");
+    }//GEN-LAST:event_btn_newActionPerformed
+
+    private void btn_saveNoteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveNoteActionPerformed
+        String title = txt_title.getText();
+        String content = txt_content.getText();
+        int userId = UserDAO.searchUserId(loggedUser);
+        
+        if(userId == 0){
+            JOptionPane.showMessageDialog(null, "id User not found", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(title.isEmpty() || content.isEmpty()){
+            lbl_errorText.setForeground(Color.RED);
+            return;
+        }
+        
+        Note newNote = new Note(userId, title, content);
+        
+        // guardo la nota en la BDD
+        NoteDAO.saveNote(newNote);
+        
+        // guardo la nota en la lista de notas del usuario loggeado
+        List<Note> noteList = loggedUser.getNoteList();
+        noteList.add(newNote);
+        
+        // guardo la nota en el modelo
+        noteListModel.addElement(newNote.getTitle()); //en el toString solo tengo el título, por lo tanto solo se verá el título
+        
+        //vacío los campos
+        txt_title.setText(null);
+        txt_content.setText(null);
+        
+        // informo de que se ha guardado con éxito
+        JOptionPane.showMessageDialog(null, "New Note saved successfully");
+    }//GEN-LAST:event_btn_saveNoteActionPerformed
+
+    // método para ocultar o mostrar el errorText
+    private void setupErrorLabelAndFocus() {
+        // 1. Al iniciar invisible (color fondo)
+        lbl_errorText.setForeground(pnl_new.getBackground());
+
+        // 3. Cuando se hace foco en cualquiera de los campos, oculta el mensaje
+        FocusAdapter focusAdapter = new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                lbl_errorText.setForeground(pnl_new.getBackground());
+            }
+        };
+        txt_title.addFocusListener(focusAdapter);
+        txt_content.addFocusListener(focusAdapter);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -375,34 +458,30 @@ public class MainPageView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_edit;
     private javax.swing.JButton btn_imageUser;
-    private javax.swing.JButton btn_login;
+    private javax.swing.JButton btn_new;
+    private javax.swing.JButton btn_saveNote;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JLabel lbl_arrow;
+    private javax.swing.JLabel lbl_errorText;
+    private javax.swing.JLabel lbl_noNotes;
     private javax.swing.JLabel lbl_prevContent;
     private javax.swing.JLabel lbl_prevTitle;
     private javax.swing.JList<String> noteList;
+    private javax.swing.JPanel parentCardPanel;
     private javax.swing.JPanel pnl_edit;
     private javax.swing.JPanel pnl_new;
     private javax.swing.JPanel pnl_nothing;
     private javax.swing.JPanel pnl_preview;
     private javax.swing.JPanel pnl_princinpal;
-    private javax.swing.JTextField tf_newTitle;
-    private javax.swing.JTextField tf_title;
-    private javax.swing.JTextArea txta_newContent;
+    private javax.swing.JTextArea txt_content;
+    private javax.swing.JTextField txt_title;
     // End of variables declaration//GEN-END:variables
 }
