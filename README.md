@@ -1,5 +1,5 @@
 # Desknotes
-Programa para generar y editar tus notas registrándote en una BDR.
+Programa para generar y editar tus notas registrándote en una BD.
 ## Estado --> En producción🔧
 ### Tecnologías utilizadas:
 - Lenguaje: **Java**
