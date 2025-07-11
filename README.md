@@ -11,5 +11,11 @@ Programa para generar y editar tus notas registrándote en una BD.
 - **MySQL** (gestionada con XAMPP)
 
 ## Funcionamiento
-Primero deberás acceder a la aplicación con tu usuario, o de no ser así, puedes registrarte.\
-![Login](Screenshots/captura_login.jpg)
+Primero deberás acceder a la aplicación con tu usuario, o de no ser así, puedes registrarte.
+<img src="Screenshots/capatura_login.JPG" alt="Login" width="400"/>
+<img src="Screenshots/capatura_registro.JPG" alt="Registro" width="400"/>
+
+Al entrar, podrás crear tus notas, editarlas o eliminarlas.\
+Todas las notas creadas podrás visualizarlas en tu lista personal, a la izquierda de la ventana.
+<img src="Screenshots/capatura_new_note.JPG" alt="New" width="400"/>
+<img src="Screenshots/capatura_lista.JPG" alt="Lista" width="313"/>
