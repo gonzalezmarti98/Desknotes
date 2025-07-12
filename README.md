@@ -16,6 +16,6 @@ Primero deberás acceder a la aplicación con tu usuario, o de no ser así, pued
 <img src="Screenshots/capatura_registro.JPG" alt="Registro" width="400"/>
 
 Al entrar, podrás crear tus notas, editarlas o eliminarlas.\
-Todas las notas creadas podrás visualizarlas en tu lista personal, a la izquierda de la ventana.
+Todas las notas creadas las podrás visualizar en tu lista personal, a la izquierda de la ventana.
 <img src="Screenshots/capatura_new_note.JPG" alt="New" width="400"/>
 <img src="Screenshots/capatura_lista.JPG" alt="Lista" width="313"/>
