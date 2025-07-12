@@ -1,4 +1,4 @@
-# Desknotes
+# Desknotes📑
 Programa para generar y editar tus notas registrándote en una BD.
 > [!NOTE]
 > **Estado** — En producción🔧
