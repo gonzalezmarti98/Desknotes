@@ -4,11 +4,42 @@ package Controllers;
 import Models.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class UserDAO {
+    
+    public static void createDataBase(){
+        String sql_1 = "CREATE DATABASE IF NOT EXISTS desknotes";
+        String sql_2 = "USE desknotes";
+        String sql_3 = "CREATE TABLE IF NOT EXISTS table_user ("
+                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
+                     + "username VARCHAR(20) NOT NULL,"
+                     + "password VARCHAR(20) NOT NULL,"
+                     + "name VARCHAR(20) NOT NULL,"
+                     + "email VARCHAR(20) NOT NULL"
+                     + ")";
+        String sql_4 = "CREATE TABLE IF NOT EXISTS table_note ("
+                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
+                     + "userId INT NOT NULL,"
+                     + "title VARCHAR(50) NOT NULL,"
+                     + "content TEXT NOT NULL,"
+                     + "FOREIGN KEY (userId) REFERENCES table_user(id) ON DELETE CASCADE"
+                     + ")";
+        try(Connection conn = ConnectionDB.conectar()){
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(sql_1);
+            stmt.executeUpdate(sql_2);
+            stmt.executeUpdate(sql_3);
+            stmt.executeUpdate(sql_4);
+            
+            System.out.println("BDD y tablas creadas correctamente");
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
     
     /**
      * 

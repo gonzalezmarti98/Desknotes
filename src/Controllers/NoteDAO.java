@@ -22,7 +22,6 @@ public class NoteDAO {
         }catch(SQLException e){
             e.printStackTrace();
         }
-        
     }
     
     public static String getContent(String title, int userId){

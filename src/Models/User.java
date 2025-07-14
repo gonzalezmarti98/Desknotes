@@ -84,8 +84,8 @@ public class User {
     
     @Override
     public String toString(){
-        return "Username: " + getUsername() +
-                "\nName: " + getName() +
-                "\nemail: " + getEmail();
+        return "USERNAME: " + getUsername() +
+                "\nNAME: " + getName() +
+                "\nEMAIL: " + getEmail();
     }
 }

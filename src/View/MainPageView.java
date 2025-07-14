@@ -1,5 +1,6 @@
 package View;
 
+import Controllers.ConnectionDB;
 import Controllers.NoteDAO;
 import Models.Note;
 import Models.User;
@@ -9,6 +10,10 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -23,14 +28,18 @@ public class MainPageView extends javax.swing.JFrame {
         
         initComponents();
         
-        setupErrorLabelAndFocus();
-        
-        noteList.setModel(noteListModel);
-
-        this.setLocationRelativeTo(null); //centra la ventana al iniciarse
-        
         // guardo el objeto loggedUser recibido de LoginView en el atributo creado "private User loggedUser;"
         this.loggedUser = loggedUser;
+        
+        UserDAO.createDataBase();
+        
+        setupErrorLabelAndFocus();
+        
+        jList_noteList.setModel(noteListModel);
+                
+        pullNotesFromDB(); //cogemos las notas del usuario de la BDD
+
+        this.setLocationRelativeTo(null); //centra la ventana al iniciarse
         
         //SWITCH de PANELES nothing, new, etc.
         //Damos nombre a cada panel para ir cambiando de vista
@@ -40,28 +49,31 @@ public class MainPageView extends javax.swing.JFrame {
         parentCardPanel.add(pnl_edit, "edit");
         
         //muestro texto si no hay notas
-        if(!loggedUser.getNoteList().isEmpty()){
+        if(!noteListModel.isEmpty()){
             lbl_arrow.setVisible(false);
             lbl_noNotes.setVisible(false);
         }
  
         //LISTA DE NOTAS
         // Le decimos a la lista que escuche cuando se selecciona un elemento
-        noteList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+        jList_noteList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             @Override
             public void valueChanged(javax.swing.event.ListSelectionEvent e) {
                 // Evitamos que se ejecute el código dos veces (por seguridad)
                 if (!e.getValueIsAdjusting()) {
                     // Obtenemos el valor (título de la nota) que el usuario seleccionó
-                    String selectedTitle = noteList.getSelectedValue();
+                    String selectedTitle = jList_noteList.getSelectedValue();
 
-                    // muestro --> TÍTULO SELECCIONADO
+                    // muestro el panel PREVIEW
                     if (selectedTitle != null) {
                         CardLayout cl = (CardLayout)(parentCardPanel.getLayout());
                         cl.show(parentCardPanel, "preview");
+                        
                         lbl_prevTitle.setText(selectedTitle);
                         String content = NoteDAO.getContent(selectedTitle, loggedUser.getId());
-                        lbl_prevContent.setText(content);
+                        // El content.replace("\n", "<br>") reemplaza los \n por <br> porque un jLabel no lee \n.
+                        // Como hay que usar html para que funcione <br>, lo abrimos y cerramos.
+                        lbl_prevContent.setText("<html>" + content.replace("\n", "<br>") + "</html>");
                     }
                 }
             }
@@ -83,7 +95,7 @@ public class MainPageView extends javax.swing.JFrame {
         btn_imageUser = new javax.swing.JButton();
         btn_new = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        noteList = new javax.swing.JList<>();
+        jList_noteList = new javax.swing.JList<>();
         parentCardPanel = new javax.swing.JPanel();
         pnl_nothing = new javax.swing.JPanel();
         lbl_arrow = new javax.swing.JLabel();
@@ -102,7 +114,8 @@ public class MainPageView extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         lbl_prevContent = new javax.swing.JLabel();
         btn_edit = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btn_delete = new javax.swing.JButton();
+        btn_saveAs = new javax.swing.JButton();
         pnl_edit = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -139,7 +152,7 @@ public class MainPageView extends javax.swing.JFrame {
 
         jScrollPane1.setBackground(new java.awt.Color(70, 73, 75));
 
-        jScrollPane1.setViewportView(noteList);
+        jScrollPane1.setViewportView(jList_noteList);
 
         parentCardPanel.setLayout(new java.awt.CardLayout());
 
@@ -263,10 +276,20 @@ public class MainPageView extends javax.swing.JFrame {
         btn_edit.setText("Edit");
         btn_edit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        jButton1.setBackground(new java.awt.Color(78, 130, 255));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton1.setText("Delete");
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_delete.setBackground(new java.awt.Color(78, 130, 255));
+        btn_delete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_delete.setText("Delete");
+        btn_delete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+
+        btn_saveAs.setBackground(new java.awt.Color(132, 165, 246));
+        btn_saveAs.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_saveAs.setText("Save as");
+        btn_saveAs.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout pnl_previewLayout = new javax.swing.GroupLayout(pnl_preview);
         pnl_preview.setLayout(pnl_previewLayout);
@@ -277,14 +300,15 @@ public class MainPageView extends javax.swing.JFrame {
                 .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jLabel2)
-                    .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(pnl_previewLayout.createSequentialGroup()
+                            .addComponent(btn_saveAs)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btn_edit)
                             .addGap(18, 18, 18)
-                            .addComponent(jButton1))
-                        .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lbl_prevContent, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
-                            .addComponent(lbl_prevTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(btn_delete))
+                        .addComponent(lbl_prevContent, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
+                        .addComponent(lbl_prevTitle, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
         pnl_previewLayout.setVerticalGroup(
@@ -301,7 +325,8 @@ public class MainPageView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_edit)
-                    .addComponent(jButton1))
+                    .addComponent(btn_delete)
+                    .addComponent(btn_saveAs))
                 .addGap(26, 26, 26))
         );
 
@@ -375,11 +400,25 @@ public class MainPageView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void pullNotesFromDB(){
+        String sql = "SELECT title FROM table_note WHERE userId=?";
+        try(Connection conn = ConnectionDB.conectar()){ //nos conectamos a la BDR
+            PreparedStatement stmt = conn.prepareStatement(sql); //transformamos instrucción para que lo pueda leer la bdd
+            stmt.setInt(1, loggedUser.getId());
+            ResultSet rs = stmt.executeQuery(); //ejecutamos SELECT
+            
+            while(rs.next()){
+                String title = rs.getString("title");
+                noteListModel.addElement(title);
+            }
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+    
     private void btn_imageUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_imageUserActionPerformed
-        String userData = "USERNAME:  " + loggedUser.getUsername() +
-                        "\nNAME:  " + loggedUser.getName() +
-                        "\nEMAIL:  " + loggedUser.getEmail();
-        JOptionPane.showMessageDialog(null, userData, "USER DATA", -1); // -1 = no mostrar imágen
+        JOptionPane.showMessageDialog(null, loggedUser.toString(), "USER DATA", -1);
     }//GEN-LAST:event_btn_imageUserActionPerformed
 
     private void btn_newActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_newActionPerformed
@@ -407,20 +446,25 @@ public class MainPageView extends javax.swing.JFrame {
         // guardo la nota en la BDD
         NoteDAO.saveNote(newNote);
         
-        // guardo la nota en la lista de notas del usuario loggeado
-        List<Note> noteList = loggedUser.getNoteList();
-        noteList.add(newNote);
-        
         // guardo la nota en el modelo
         noteListModel.addElement(newNote.getTitle()); //en el toString solo tengo el título, por lo tanto solo se verá el título
         
         //vacío los campos
         txt_title.setText(null);
         txt_content.setText(null);
-        
-        // informo de que se ha guardado con éxito
         JOptionPane.showMessageDialog(null, "New Note saved successfully");
     }//GEN-LAST:event_btn_saveNoteActionPerformed
+
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        int chose = JOptionPane.showConfirmDialog(null, "Are you sure?", "Delete Note", JOptionPane.YES_NO_OPTION);
+        if(chose == JOptionPane.YES_OPTION){
+            
+            JOptionPane.showMessageDialog(null, "Note deleted successfully");
+            CardLayout cl = (CardLayout) (parentCardPanel.getLayout());
+            cl.show(parentCardPanel, "nothing");
+            
+        }
+    }//GEN-LAST:event_btn_deleteActionPerformed
 
     // método para ocultar o mostrar el errorText
     private void setupErrorLabelAndFocus() {
@@ -456,17 +500,19 @@ public class MainPageView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_edit;
     private javax.swing.JButton btn_imageUser;
     private javax.swing.JButton btn_new;
+    private javax.swing.JButton btn_saveAs;
     private javax.swing.JButton btn_saveNote;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JList<String> jList_noteList;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbl_arrow;
@@ -474,7 +520,6 @@ public class MainPageView extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_noNotes;
     private javax.swing.JLabel lbl_prevContent;
     private javax.swing.JLabel lbl_prevTitle;
-    private javax.swing.JList<String> noteList;
     private javax.swing.JPanel parentCardPanel;
     private javax.swing.JPanel pnl_edit;
     private javax.swing.JPanel pnl_new;
