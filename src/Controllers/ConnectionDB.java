@@ -11,7 +11,7 @@ public class ConnectionDB {
     private static final String USER = "root";
     private static final String PASSWORD = "";
     
-    public static Connection conectar(){
+    public static Connection connectWithDB(){
         try{
             return DriverManager.getConnection(URL, USER, PASSWORD);
             

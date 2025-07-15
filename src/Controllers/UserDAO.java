@@ -28,7 +28,7 @@ public class UserDAO {
                      + "content TEXT NOT NULL,"
                      + "FOREIGN KEY (userId) REFERENCES table_user(id) ON DELETE CASCADE"
                      + ")";
-        try(Connection conn = ConnectionDB.conectar()){
+        try(Connection conn = ConnectionDB.connectWithDB()){
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(sql_1);
             stmt.executeUpdate(sql_2);
@@ -50,7 +50,7 @@ public class UserDAO {
     public static User login(String user, String password){
         User LoggedUser = null;
         String sql = "SELECT * FROM table_user WHERE username=? AND password=?";
-        try(Connection conn = ConnectionDB.conectar()){
+        try(Connection conn = ConnectionDB.connectWithDB()){
             PreparedStatement stmnt = conn.prepareStatement(sql); //transforma la instrucción sql para que lo lea la bdd
             stmnt.setString(1, user);
             stmnt.setString(2, password);
@@ -75,18 +75,18 @@ public class UserDAO {
     public static boolean newUser(User user){
         boolean usernameRepeated = repeatedValue("username", user.getUsername());
         if(usernameRepeated){
-            JOptionPane.showMessageDialog(null, "This username is already in use", "Registry failed", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "❌ This username is already in use", "Registry failed", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         
         boolean emailRepeated = repeatedValue("email", user.getEmail());
         if(emailRepeated){
-            JOptionPane.showMessageDialog(null, "This email is already in use", "Registry failed", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "❌ This email is already in use", "Registry failed", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         
         String sql = "INSERT into table_user(username, password, name, email) VALUES(?,?,?,?)";
-        try(Connection conn = ConnectionDB.conectar()){
+        try(Connection conn = ConnectionDB.connectWithDB()){
             //transformamos instrucción para que lo pueda leer la bdd y guardamos el nuevo User
             PreparedStatement stmnt = conn.prepareStatement(sql);
             stmnt.setString(1, user.getUsername());
@@ -103,7 +103,7 @@ public class UserDAO {
     
     private static boolean repeatedValue(String columna, String valor){
         String sql = "SELECT COUNT(*) FROM table_user WHERE " + columna + "=?";
-        try(Connection conn = ConnectionDB.conectar()){ //nos conectamos a la BDR
+        try(Connection conn = ConnectionDB.connectWithDB()){ //nos conectamos a la BDR
             PreparedStatement stmt = conn.prepareStatement(sql); //transformamos instrucción para que lo pueda leer la bdd
             stmt.setString(1, valor);
             ResultSet rs = stmt.executeQuery(); //ejecutamos SELECT
@@ -124,7 +124,7 @@ public class UserDAO {
     
     public static int searchUserId(User user){
         String sql = "SELECT id FROM table_user WHERE username=?";
-        try(Connection conn = ConnectionDB.conectar()){ //nos conectamos a la BDR
+        try(Connection conn = ConnectionDB.connectWithDB()){ //nos conectamos a la BDR
             PreparedStatement stmt = conn.prepareStatement(sql); //transformamos instrucción para que lo pueda leer la bdd
             stmt.setString(1, user.getUsername());
             ResultSet rs = stmt.executeQuery(); //ejecutamos SELECT
