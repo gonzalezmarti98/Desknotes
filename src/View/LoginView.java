@@ -21,6 +21,7 @@ public class LoginView extends javax.swing.JFrame {
         setupErrorLabelAndFocus();
         
         this.setLocationRelativeTo(null);
+        
     }
     /**
      * <pre>
@@ -219,7 +220,6 @@ public class LoginView extends javax.swing.JFrame {
         });
         }else{
             lbl_errorText.setForeground(Color.RED);
-            //JOptionPane.showMessageDialog(null, "Loggin failed", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btn_loginActionPerformed
 

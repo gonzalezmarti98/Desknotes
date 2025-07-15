@@ -30,9 +30,7 @@ public class MainPageView extends javax.swing.JFrame {
         
         // guardo el objeto loggedUser recibido de LoginView en el atributo creado "private User loggedUser;"
         this.loggedUser = loggedUser;
-        
-        UserDAO.createDataBase();
-        
+                
         setupErrorLabelAndFocus();
         
         jList_noteList.setModel(noteListModel);
@@ -117,6 +115,11 @@ public class MainPageView extends javax.swing.JFrame {
         btn_delete = new javax.swing.JButton();
         btn_saveAs = new javax.swing.JButton();
         pnl_edit = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        lbl_editTitle = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txt_editContent = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -225,7 +228,7 @@ public class MainPageView extends javax.swing.JFrame {
         pnl_newLayout.setHorizontalGroup(
             pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_newLayout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addGap(23, 23, 23)
                 .addGroup(pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jLabel6)
@@ -236,12 +239,12 @@ public class MainPageView extends javax.swing.JFrame {
                         .addComponent(lbl_errorText)
                         .addGap(61, 61, 61)
                         .addComponent(btn_saveNote)))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         pnl_newLayout.setVerticalGroup(
             pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_newLayout.createSequentialGroup()
-                .addGap(26, 26, 26)
+                .addGap(25, 25, 25)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txt_title, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -253,7 +256,7 @@ public class MainPageView extends javax.swing.JFrame {
                 .addGroup(pnl_newLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_saveNote)
                     .addComponent(lbl_errorText))
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         parentCardPanel.add(pnl_new, "card3");
@@ -334,15 +337,48 @@ public class MainPageView extends javax.swing.JFrame {
 
         pnl_edit.setBackground(new java.awt.Color(70, 73, 75));
 
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel7.setText("Title");
+
+        lbl_editTitle.setText("Titulo de la nota seleccionada");
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel8.setText("Content");
+
+        txt_editContent.setColumns(20);
+        txt_editContent.setRows(5);
+        jScrollPane3.setViewportView(txt_editContent);
+
         javax.swing.GroupLayout pnl_editLayout = new javax.swing.GroupLayout(pnl_edit);
         pnl_edit.setLayout(pnl_editLayout);
         pnl_editLayout.setHorizontalGroup(
             pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 481, Short.MAX_VALUE)
+            .addGroup(pnl_editLayout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnl_editLayout.createSequentialGroup()
+                        .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel8)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(pnl_editLayout.createSequentialGroup()
+                        .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(lbl_editTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE))
+                        .addGap(28, 28, 28))))
         );
         pnl_editLayout.setVerticalGroup(
             pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 462, Short.MAX_VALUE)
+            .addGroup(pnl_editLayout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbl_editTitle)
+                .addGap(30, 30, 30)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(61, Short.MAX_VALUE))
         );
 
         parentCardPanel.add(pnl_edit, "card5");
@@ -402,7 +438,7 @@ public class MainPageView extends javax.swing.JFrame {
 
     private void pullNotesFromDB(){
         String sql = "SELECT title FROM table_note WHERE userId=?";
-        try(Connection conn = ConnectionDB.conectar()){ //nos conectamos a la BDR
+        try(Connection conn = ConnectionDB.connectWithDB()){ //nos conectamos a la BDR
             PreparedStatement stmt = conn.prepareStatement(sql); //transformamos instrucción para que lo pueda leer la bdd
             stmt.setInt(1, loggedUser.getId());
             ResultSet rs = stmt.executeQuery(); //ejecutamos SELECT
@@ -433,14 +469,20 @@ public class MainPageView extends javax.swing.JFrame {
         int userId = UserDAO.searchUserId(loggedUser);
         
         if(userId == 0){
-            JOptionPane.showMessageDialog(null, "id User not found", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "❌ id User not found", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         if(title.isEmpty() || content.isEmpty()){
             lbl_errorText.setForeground(Color.RED);
             return;
         }
+        boolean repeatedTitle = NoteDAO.repeatedTitle(title);
+        if(repeatedTitle == true){
+            JOptionPane.showMessageDialog(null, "❌ Repeated title", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         
+        // Creamos la Note si encontramos el user, están los 2 campos rellenados, y no se repite el title
         Note newNote = new Note(userId, title, content);
         
         // guardo la nota en la BDD
@@ -457,12 +499,18 @@ public class MainPageView extends javax.swing.JFrame {
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
         int chose = JOptionPane.showConfirmDialog(null, "Are you sure?", "Delete Note", JOptionPane.YES_NO_OPTION);
+        String title = lbl_prevTitle.getText();
+        
         if(chose == JOptionPane.YES_OPTION){
-            
-            JOptionPane.showMessageDialog(null, "Note deleted successfully");
-            CardLayout cl = (CardLayout) (parentCardPanel.getLayout());
-            cl.show(parentCardPanel, "nothing");
-            
+            int idNote = NoteDAO.getIdfromTitle(title);
+            if (idNote != -1){
+                NoteDAO.deleteNote(title, idNote);
+                noteListModel.removeElement(title);
+
+                JOptionPane.showMessageDialog(null, "Note deleted successfully");
+                CardLayout cl = (CardLayout) (parentCardPanel.getLayout());
+                cl.show(parentCardPanel, "nothing");
+            }
         }
     }//GEN-LAST:event_btn_deleteActionPerformed
 
@@ -512,10 +560,14 @@ public class MainPageView extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JList<String> jList_noteList;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lbl_arrow;
+    private javax.swing.JLabel lbl_editTitle;
     private javax.swing.JLabel lbl_errorText;
     private javax.swing.JLabel lbl_noNotes;
     private javax.swing.JLabel lbl_prevContent;
@@ -527,6 +579,7 @@ public class MainPageView extends javax.swing.JFrame {
     private javax.swing.JPanel pnl_preview;
     private javax.swing.JPanel pnl_princinpal;
     private javax.swing.JTextArea txt_content;
+    private javax.swing.JTextArea txt_editContent;
     private javax.swing.JTextField txt_title;
     // End of variables declaration//GEN-END:variables
 }
