@@ -12,8 +12,9 @@ import javax.swing.JOptionPane;
 public class UserDAO {
     
     public static void createDataBase(){
-        String sql_1 = "CREATE DATABASE IF NOT EXISTS desknotes";
-        String sql_2 = "USE desknotes";
+        String dbName = ConfigReader.get("database");
+        String sql_1 = "CREATE DATABASE IF NOT EXISTS " + dbName;
+        String sql_2 = "USE " + dbName;
         String sql_3 = "CREATE TABLE IF NOT EXISTS table_user ("
                      + "id INT AUTO_INCREMENT PRIMARY KEY,"
                      + "username VARCHAR(20) NOT NULL,"
@@ -28,12 +29,12 @@ public class UserDAO {
                      + "content TEXT NOT NULL,"
                      + "FOREIGN KEY (userId) REFERENCES table_user(id) ON DELETE CASCADE"
                      + ")";
-        try(Connection conn = ConnectionDB.connectWithDB()){
+        try(Connection conn = ConnectionDB.connectWithoutDB()){
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql_1);
-            stmt.executeUpdate(sql_2);
-            stmt.executeUpdate(sql_3);
-            stmt.executeUpdate(sql_4);
+            stmt.executeUpdate(sql_1); //crear DB
+            stmt.executeUpdate(sql_2); //usar DB
+            stmt.executeUpdate(sql_3); // crear tabla table_user
+            stmt.executeUpdate(sql_4); // crear tabla table_note
             
             System.out.println("BDD y tablas creadas correctamente");
         }catch(SQLException e){
