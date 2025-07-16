@@ -46,14 +46,15 @@ database=desknotes
 
 ## 🎨 Funcionalidades
 - Podrás acceder a la aplicación con tu usuario, o de no ser así, registrarte desde el botón pertinente.
-<div style="display: flex; gap: 10px;">
+<div style="display: flex; gap: 20px;">
   <img src="Screenshots/capatura_login.JPG" alt="Login" width="300"/>
   <img src="Screenshots/capatura_registro.JPG" alt="Registro" width="300"/>
 </div>
 
 - Al entrar, podrás crear tus notas, editarlas o eliminarlas.
 Todas las notas creadas las podrás visualizar en tu lista personal, a la izquierda de la ventana.
-<div style="display: flex; gap: 10px;">
+<div style="display: flex; gap: 20px;">
   <img src="Screenshots/capatura_new_note.JPG" alt="New" width="300"/>
   <img src="Screenshots/capatura_lista.JPG" alt="Lista" width="236"/>
+  <img src="Screenshots/capatura_editDelete.JPG" alt="EditDelete" width="417"/>
 </div>
