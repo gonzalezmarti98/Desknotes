@@ -56,5 +56,5 @@ Todas las notas creadas las podrás visualizar en tu lista personal, a la izquie
 <div style="display: flex; gap: 20px;">
   <img src="Screenshots/capatura_new_note.JPG" alt="New" width="300"/>
   <img src="Screenshots/capatura_lista.JPG" alt="Lista" width="236"/>
-  <img src="Screenshots/capatura_editDelete.JPG" alt="EditDelete" width="417"/>
+  <img src="Screenshots/capatura_editDelete.JPG" alt="EditDelete" width="350"/>
 </div>
