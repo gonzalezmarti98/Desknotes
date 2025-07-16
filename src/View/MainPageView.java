@@ -10,12 +10,17 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 public class MainPageView extends javax.swing.JFrame {
@@ -71,7 +76,11 @@ public class MainPageView extends javax.swing.JFrame {
                         String content = NoteDAO.getContent(selectedTitle, loggedUser.getId());
                         // El content.replace("\n", "<br>") reemplaza los \n por <br> porque un jLabel no lee \n.
                         // Como hay que usar html para que funcione <br>, lo abrimos y cerramos.
-                        lbl_prevContent.setText("<html>" + content.replace("\n", "<br>") + "</html>");
+                        if(content.startsWith("<html>")){
+                            lbl_prevContent.setText(content.replace("<html>", "").replace("<br>","\n").replace("</html>", ""));
+                        }else{
+                            lbl_prevContent.setText("<html>" + content.replace("\n", "<br>") + "</html>");
+                        }
                     }
                 }
             }
@@ -113,13 +122,14 @@ public class MainPageView extends javax.swing.JFrame {
         lbl_prevContent = new javax.swing.JLabel();
         btn_edit = new javax.swing.JButton();
         btn_delete = new javax.swing.JButton();
-        btn_saveAs = new javax.swing.JButton();
+        btn_export = new javax.swing.JButton();
         pnl_edit = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         lbl_editTitle = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         txt_editContent = new javax.swing.JTextArea();
+        btn_saveEdit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -145,6 +155,7 @@ public class MainPageView extends javax.swing.JFrame {
 
         btn_new.setBackground(new java.awt.Color(78, 130, 255));
         btn_new.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_new.setForeground(new java.awt.Color(255, 255, 255));
         btn_new.setText("New ");
         btn_new.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_new.addActionListener(new java.awt.event.ActionListener() {
@@ -207,6 +218,7 @@ public class MainPageView extends javax.swing.JFrame {
 
         btn_saveNote.setBackground(new java.awt.Color(78, 130, 255));
         btn_saveNote.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_saveNote.setForeground(new java.awt.Color(255, 255, 255));
         btn_saveNote.setText("Save Note");
         btn_saveNote.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_saveNote.addActionListener(new java.awt.event.ActionListener() {
@@ -276,11 +288,18 @@ public class MainPageView extends javax.swing.JFrame {
 
         btn_edit.setBackground(new java.awt.Color(78, 130, 255));
         btn_edit.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_edit.setForeground(new java.awt.Color(255, 255, 255));
         btn_edit.setText("Edit");
         btn_edit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_edit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_editActionPerformed(evt);
+            }
+        });
 
         btn_delete.setBackground(new java.awt.Color(78, 130, 255));
         btn_delete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_delete.setForeground(new java.awt.Color(255, 255, 255));
         btn_delete.setText("Delete");
         btn_delete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_delete.addActionListener(new java.awt.event.ActionListener() {
@@ -289,10 +308,16 @@ public class MainPageView extends javax.swing.JFrame {
             }
         });
 
-        btn_saveAs.setBackground(new java.awt.Color(132, 165, 246));
-        btn_saveAs.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_saveAs.setText("Save as");
-        btn_saveAs.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_export.setBackground(new java.awt.Color(78, 130, 255));
+        btn_export.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_export.setForeground(new java.awt.Color(255, 255, 255));
+        btn_export.setText("Export");
+        btn_export.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_export.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_exportActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnl_previewLayout = new javax.swing.GroupLayout(pnl_preview);
         pnl_preview.setLayout(pnl_previewLayout);
@@ -305,7 +330,7 @@ public class MainPageView extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(pnl_previewLayout.createSequentialGroup()
-                            .addComponent(btn_saveAs)
+                            .addComponent(btn_export)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btn_edit)
                             .addGap(18, 18, 18)
@@ -329,7 +354,7 @@ public class MainPageView extends javax.swing.JFrame {
                 .addGroup(pnl_previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_edit)
                     .addComponent(btn_delete)
-                    .addComponent(btn_saveAs))
+                    .addComponent(btn_export))
                 .addGap(26, 26, 26))
         );
 
@@ -349,6 +374,16 @@ public class MainPageView extends javax.swing.JFrame {
         txt_editContent.setRows(5);
         jScrollPane3.setViewportView(txt_editContent);
 
+        btn_saveEdit.setBackground(new java.awt.Color(78, 130, 255));
+        btn_saveEdit.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_saveEdit.setForeground(new java.awt.Color(255, 255, 255));
+        btn_saveEdit.setText("Save");
+        btn_saveEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_saveEditActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnl_editLayout = new javax.swing.GroupLayout(pnl_edit);
         pnl_edit.setLayout(pnl_editLayout);
         pnl_editLayout.setHorizontalGroup(
@@ -357,15 +392,20 @@ public class MainPageView extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnl_editLayout.createSequentialGroup()
-                        .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel8)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel8)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(pnl_editLayout.createSequentialGroup()
-                        .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(lbl_editTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_editLayout.createSequentialGroup()
+                        .addGroup(pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnl_editLayout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(lbl_editTitle, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(28, 28, 28))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_editLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_saveEdit)
+                .addGap(62, 62, 62))
         );
         pnl_editLayout.setVerticalGroup(
             pnl_editLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -378,7 +418,9 @@ public class MainPageView extends javax.swing.JFrame {
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_saveEdit)
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         parentCardPanel.add(pnl_edit, "card5");
@@ -510,9 +552,66 @@ public class MainPageView extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Note deleted successfully");
                 CardLayout cl = (CardLayout) (parentCardPanel.getLayout());
                 cl.show(parentCardPanel, "nothing");
+                
+                if(noteListModel.isEmpty()){
+                lbl_arrow.setVisible(true);
+                lbl_noNotes.setVisible(true);
+        }
             }
         }
     }//GEN-LAST:event_btn_deleteActionPerformed
+
+    private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
+        CardLayout cl = (CardLayout) (parentCardPanel.getLayout());
+        cl.show(parentCardPanel, "edit");
+        lbl_editTitle.setText(lbl_prevTitle.getText());
+        
+        String htmlText = lbl_prevContent.getText();
+        String plainText = htmlText.replace("<html>", "")
+                                   .replace("</html>", "")
+                                   .replace("<br>", "\n");
+        
+        txt_editContent.setText(plainText);
+    }//GEN-LAST:event_btn_editActionPerformed
+
+    private void btn_saveEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveEditActionPerformed
+        String title = lbl_editTitle.getText();
+        String plainTextContent = txt_editContent.getText();
+        String content = "<html>" + plainTextContent.replace("\n", "<br>") + "</html>";
+        
+        NoteDAO.saveEditNote(title, content);
+        
+        JOptionPane.showMessageDialog(null, "Note edited successfully");
+        CardLayout cl = (CardLayout) (parentCardPanel.getLayout());
+        cl.show(parentCardPanel, "nothing");
+        
+    }//GEN-LAST:event_btn_saveEditActionPerformed
+
+    private void btn_exportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_exportActionPerformed
+        String title = lbl_prevTitle.getText();
+        String htmlContent = lbl_prevContent.getText();
+        String content = htmlContent.replace("<html>", "")
+                                    .replace("<br>", "\n")
+                                    .replace("</html>", "\n");
+        
+        JFileChooser fileChooser = new JFileChooser(); //creo un exportador de archivos
+        fileChooser.setDialogTitle("Save as txt"); //cambio el título del fileChooser (arriba izq)
+        fileChooser.setSelectedFile(new File(title + ".txt")); //nombre predeterminado del archivo
+        
+        //Guardo la selección del user. Si ha sido guardar o cancelar
+        int userSelection = fileChooser.showSaveDialog(null);
+        
+        if (userSelection == JFileChooser.APPROVE_OPTION){ //habiendo pulsado guardar
+            File fileToSave = fileChooser.getSelectedFile(); //obtengo el archivo que el usuario seleccionó (con la ruta completa)
+            
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileToSave))){
+                writer.write(title + "\n\n" + content);
+                JOptionPane.showMessageDialog(null, "Note saved successfully");
+            }catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error saving the Note", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btn_exportActionPerformed
 
     // método para ocultar o mostrar el errorText
     private void setupErrorLabelAndFocus() {
@@ -550,9 +649,10 @@ public class MainPageView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_edit;
+    private javax.swing.JButton btn_export;
     private javax.swing.JButton btn_imageUser;
     private javax.swing.JButton btn_new;
-    private javax.swing.JButton btn_saveAs;
+    private javax.swing.JButton btn_saveEdit;
     private javax.swing.JButton btn_saveNote;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

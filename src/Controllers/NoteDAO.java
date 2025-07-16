@@ -2,7 +2,6 @@
 package Controllers;
 
 import Models.Note;
-import Controllers.ConnectionDB;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
@@ -87,6 +86,19 @@ public class NoteDAO {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    public static void saveEditNote(String title, String content){
+        String sql = "UPDATE table_note SET content=? WHERE title=?";
+        try(Connection conn = ConnectionDB.connectWithDB()){
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, content);
+            stmt.setString(2, title);
+            stmt.executeUpdate(); //ejecutamos UPDATE
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
     
 }
