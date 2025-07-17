@@ -12,10 +12,6 @@ public class User {
     private String name;
     private String email;
     
-    private List<Note> noteList = new ArrayList<>();
-    // no estará en la tabla de la BDR
-    // no la ponemos en el constructor pq no la queremos al crear un User
-    
     public User(){}
     
     
@@ -72,14 +68,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-    
-    public List<Note> getNoteList(){
-        return noteList;
-    }
-    
-    public void setNoteList(List<Note> noteList){
-        this.noteList = noteList;
     }
     
     @Override

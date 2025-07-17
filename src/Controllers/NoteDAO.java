@@ -71,11 +71,12 @@ public class NoteDAO {
         return -1;
     }
     
-    public static boolean repeatedTitle(String title){
-        String sql = "SELECT title FROM table_note WHERE title=?";
+    public static boolean repeatedTitle(String title, int userId){
+        String sql = "SELECT title FROM table_note WHERE title=? AND userId=?";
         try(Connection conn = ConnectionDB.connectWithDB()){
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, title);
+            stmt.setInt(2, userId);
             ResultSet rs = stmt.executeQuery(); //ejecutamos SELECT
             
             if(rs.next()){
