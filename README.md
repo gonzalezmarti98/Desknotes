@@ -56,3 +56,5 @@ Todas las notas creadas las podrás visualizar en tu lista personal, en el panel
   <img src="Screenshots/capatura_lista.JPG" alt="Lista" width="236"/>
   <img src="Screenshots/capatura_editDelete.JPG" alt="EditDelete" width="350"/>
 </div>
+
+- También encontrarás el botón "Save as" con el que podrás guardar tus notas en tu dispositivo personal en formato .txt
